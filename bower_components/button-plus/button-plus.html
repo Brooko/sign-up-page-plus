@@ -1,0 +1,64 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`button-plus`
+
+
+@demo demo/index.html 
+-->
+
+<dom-module id="button-plus">
+  <template>
+    <style>
+
+      div {
+        @apply(--button-plus-font-specification);    
+        color:var(--button-plus-main-color);
+        padding:6px 16px 6px 16px;
+        border-radius:6px;
+        text-align: center;
+        cursor:pointer;
+        /*UN-SELECT BUTTON*/
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+
+      div:not([border]):hover {
+        opacity:0.8;
+      }
+
+      div[border] {
+         border:1px solid var(--button-plus-main-color);
+      }
+
+      div[fill] {
+        background-color:var(--button-plus-fill-color);
+      }
+
+      div[border]:hover {
+        background-color:var(--button-plus-fill-color);
+      }
+
+      div[fill]:hover {
+        opacity:0.8;
+
+      }
+
+    </style>
+    <div border$="[[border]]" fill$="[[fill]]"><content></content></div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'button-plus',
+      properties: {
+        border:{value:false},
+        fill:{value:false},
+
+      
+      },
+
+    });
+  </script>
+</dom-module>

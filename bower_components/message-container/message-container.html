@@ -1,0 +1,143 @@
+<dom-module id="message-container">
+  <template>
+      <style>
+        .message {
+            @apply (--message-container-message-box);
+            padding:calc(var(--message-container-text-size, 12px)*0.5);
+            font-size:var(--message-container-text-size);
+            width: 360px;
+
+        }
+
+        .error{
+            color:var(--message-container-error-text-color,darkred);
+            background-color: var(--message-container-error-background-color,rgba(200, 0, 0, 0.20));
+            border:var(--message-container-error-border,2px solid darkred);
+            border-radius: 6px;
+        }
+
+        .ok{
+            color:var(--message-container-ok-text-color,darkgreen);
+            background-color: var(--message-container-error-background-color,rgba(0, 200, 0, 0.20));
+            border:var(--message-container-ok-border,2px solid darkgreen);
+            border-radius: 6px;
+        }
+
+        .ok[hideOk]{
+            display:none;
+        }
+
+        .warning{
+            color: var(--message-container-warning-text-color,rgb(139,139,0));
+            background-color: var(--message-container-error-background-color,rgba(200, 200, 0, 0.20));
+            border: var(--message-container-warning-border,2px solid rgb(139,139,0));
+            border-radius: 6px;
+        }
+      </style>
+
+      <div class$="[[generateClass(errorFlag,warningFlag,message)]]">
+        [[generateMessage(errorFlag,warningFlag,message)]]
+      </div>
+      
+  </template>
+  
+  <script>
+        Polymer({
+
+            is: 'message-container',
+
+            // FUNTCION generateClass: Generate the correct class
+            generateClass:function (errorFlag,warningFlag) {
+                
+                // 1. CHOOSE THE CORRECT CLASS
+                if (errorFlag) {
+                  return "message error";
+                }
+                else if (warningFlag) {
+                  return "message warning";
+                }
+                else {
+                  if (!this.hideOk) {
+                    return "message ok";
+                    }
+                    else {
+                      return null;
+                    }
+                }
+            },    
+
+            // FUNTCION generateMessage: Generate the correct message
+            generateMessage:function (errorFlag,warningFlag,message) {  
+                // 1. CHOOSE THE CORRECT MESSAGE
+                if (this.errorFlag||this.warningFlag) {
+                  return this.message;
+                }
+                else {
+                  if (!this.hideOk) {
+                    return this.okMessage;
+                  }
+                  else {
+                    return null;
+                  };
+                };
+            }, 
+
+            // FUNTCION generateClass: Generate the correct icon. Future feature: CSS implementation (icon customizable)
+            generateMessageIcon:function (errorFlag,warningFlag,message) {
+                
+                // 1. CHOOSE THE CORRECT CLASS
+                if (this.errorFlag) {
+                  return "fa fa-exclamation";
+                }
+                else if (this.warningFlag) {
+                  return "fa fa-exclamation";
+                }
+                else {
+                  if (!this.hideOk) {
+                    return "fa fa-check";
+                    }
+                    else {
+                      return null;
+                    };
+                };
+            },       
+
+            properties:{
+              message:{
+                type:String,
+                value:"ERR/WARN",
+              },
+              
+              // ERROR PROPRETIES
+              errorFlag:{
+                type:Boolean,
+                value:false,
+              },
+
+              // OK PROPRETIES
+              hideOk:{
+                type:Boolean,
+                value:false,
+                notify:true,
+              },
+              
+              okMessage:{
+                type:String,
+                value:"Content allowed",
+              },    
+    
+              // WARNINGS PROPRETIES
+              warningFlag:{
+                type:Boolean,
+                value:false,
+              },
+
+              digits:{
+                type:Number,
+                value:8,
+                notify:true,
+              },
+          },
+        }); 
+    </script>
+</dom-module>

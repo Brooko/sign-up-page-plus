@@ -1,0 +1,7 @@
+{
+  "name": "new-user-form-plus",
+  "short_name": "new-user-form-plus",
+  "description": "A form for insert a new user",
+  "start_url": "/",
+  "display": "standalone"
+}

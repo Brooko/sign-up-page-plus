@@ -1,0 +1,434 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<!-- IRON LIBRARIES -->
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<!-- PLUS LIBRARIES -->
+<link rel="import" href="../../bower_components/radio-button-list-plus/radio-button-list-plus.html">
+<link rel="import" href="../../bower_components/message-container/message-container.html">
+<link rel="import" href="../../bower_components/button-plus/button-plus.html">
+
+<script src="https://www.gstatic.com/firebasejs/3.7.0/firebase.js"></script>
+
+<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+
+<dom-module id="sign-up-page-plus-app">
+	<template>
+		<style>
+			:host{
+				display: block;
+
+				--text-size:12px;
+
+			--message-container-message-box:{
+				 margin-bottom: 30px;
+			 };
+
+
+			--message-container-text-size:var(--text-size);
+			--option-button-plus-button-container:{
+				 margin: 4px;
+			 };
+			--option-button-plus-button:{
+				 margin-right: 4px;
+				 font-size:var(--option-button-plus-font-size);
+				 border: 2px #263238 solid;
+			 };
+			--option-button-plus-button-selected:{
+				 background-color: transparent;
+			 };
+			--option-button-plus-button-unselected:{
+			 };
+			--option-button-plus-mark-color:#263238;
+			--option-button-plus-label:{
+				 color:#263238;
+				 margin-left: 4px;
+				 font-size:var(--option-button-plus-font-size)
+			 };
+			--option-button-plus-label-checked:{
+			 };
+			--option-button-plus-label-unchecked:{
+			 };
+			--option-button-plus-font-size:12px;
+
+			--button-plus-font-specification:{
+				 font-size:12px;
+				 letter-spacing:1px;
+				 line-height:22px;
+
+			 };
+			--button-plus-main-color: #CFD8DC;
+			--button-plus-fill-color: #263238;
+			}
+			.form-style{
+				background-color: #263238 ;
+				padding:2px;
+				border:1px #263238 solid;
+				display:flex;
+				flex-direction: column;
+				justify-content: center;
+				min-width: 400px;
+				font-family: 'Ubuntu', sans-serif;
+				/*box-shadow: 10px 10px 5px #888888;*/
+				box-shadow: 0px 0px 60px 15px rgba(96,125,139,0.5);
+			}
+			.header{
+				border:2px #263238 solid !important;
+				padding:18px;
+				font-size:36px;
+				color:white;
+				background-color: #263238;
+			}
+			.internal-rect{
+				padding:20px;
+				background-color: #CFD8DC;
+				color:#263238;
+			}
+			.rowForm {
+			@apply(--layout-horizontal);
+				align-items: center;
+				margin-bottom:4px;
+			}
+			.columnForm {
+			@apply(--layout-flex);
+
+			}
+			.radio{
+				align-items: flex-start;
+			}
+			.input{
+				border:2px #263238 solid;
+				border-radius: 6px;
+				padding:4px;
+			}
+			input{
+				line-height:22px;
+				user-select: none;
+				position: relative;
+				display:block;
+				float: left;
+				padding: 0;
+				width:100%;
+				border:0;
+				font-family: 'Ubuntu', sans-serif;
+				background-color: #CFD8DC;
+				color: #263238;
+			}
+			input:focus{
+				outline: none;
+			}
+			::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+				color: #607D8B;
+			}
+		</style>
+
+		<iron-pages id="sign_up_pages" attr-for-selected="name" selected="home">
+			<section name="home">
+				<button-plus fill on-tap="_signUpButton">Sign-in</button-plus>
+				<button-plus fill on-tap="_loginButton">Login</button-plus>
+			</section>
+			<section name="login">
+				<div class="form-style">
+					<div class="header">Login</div>
+					<div class="internal-rect">
+						<div class="rowForm">
+							<message-container ok-message="The inscription was carried
+							out successfully. You will shortly receive the activation e-mail.">
+							</message-container>
+						</div>
+						<button-plus fill on-tap="_submitButton">Login</button-plus>
+					</div>
+				</div>
+			</section>
+			<section name="sign_up">
+				<div class="form-style">
+					<div class="header">Sign up</div>
+					<div class="internal-rect">
+						<div class="rowForm">
+							<div class="columnForm input">
+								<div class="inputContainer">
+									<input id="username"
+										   is="iron-input"
+										   prevent-invalid-input allowed-pattern="[a-zA-Z0-9_]"
+										   on-keyup="_controlUser"
+										   placeholder="Username" >
+								</div>
+							</div>
+						</div>
+						<div class="rowForm">
+							<message-container error-flag="[[!_userFlag]]"
+											   message="Username already used"
+											   ok-message="Username available">
+							</message-container>
+						</div>
+						<div class="rowForm">
+							<div class="columnForm input">
+								<div class="inputContainer">
+									<input type="password"
+										   id="password"
+										   is="iron-input"
+										   on-keyup="_returnUser"
+										   placeholder="Password">
+								</div>
+							</div>
+						</div>
+						<div class="rowForm">
+							<div class="columnForm input">
+								<input type="password"
+									   id="repeat_password"
+									   is="iron-input"
+									   on-keyup="_controlPassword"
+									   placeholder="Repeat Password">
+							</div>
+						</div>
+						<div class="rowForm">
+							<message-container error-flag="[[!_passwordFlag]]"
+											   message="Insert the same password"
+											   ok-message="Password accepted">
+							</message-container>
+						</div>
+						<div class="rowForm">
+							<div class="columnForm input">
+								<input id="mail"
+									   is="iron-input"
+									   on-keyup="_controlMail"
+									   placeholder="E-mail">
+							</div>
+						</div>
+						<div class="rowForm">
+							<message-container error-flag="[[_getBooleanErrorMailFlag(_mailFlag)]]"
+											   message="[[_getMailMessage(_mailFlag)]]">
+							</message-container>
+						</div>
+						<div class="rowForm radio" style="margin-bottom:30px;">
+							<div class="columnForm">
+								Level<radio-button-list-plus
+									id="level"
+									items="{{levels}}"
+									rules="[[rules]]"
+									attr-for-select="label"
+									item-selected="value"
+									on-press="_returnUser">
+							</radio-button-list-plus>
+							</div>
+							<div class="columnForm radio">
+								Quota <radio-button-list-plus
+									id="quota"
+									items="{{quota}}"
+									rules="[[rules]]"
+									attr-for-select="label"
+									item-selected="{{value}}"
+									on-press="_returnUser">
+							</radio-button-list-plus>
+							</div>
+						</div>
+						<!-- <div class="rowForm">
+                        <div class="columnForm">
+                        Upload:
+                        </div>
+                        <div class="columnForm">
+                        <input type="file" name="fileToUpload" id="fileToUpload">
+                        </div>
+                        </div> -->
+						<div class="rowForm" style="margin-bottom: 15px;">
+							<div class="columnForm input">
+								<input id="fullname"
+									   is="iron-input"
+									   prevent-invalid-input allowed-pattern="[a-zA-Z ]"
+									   on-keyup="_returnUser"
+									   placeholder="Full name">
+							</div>
+						</div>
+						<button-plus fill on-tap="_submit">Submit</button-plus>
+					</div>
+				</div>
+			</section>
+			<section>
+				<div class="form-style">
+					<div class="header">Signed up!</div>
+					<div class="internal-rect">
+						<div class="rowForm">
+							<message-container ok-message="The inscription was carried
+							out successfully. You will shortly receive the activation e-mail.">
+							</message-container>
+						</div>
+						<button-plus fill on-tap="_submitButton">Login</button-plus>
+					</div>
+				</div>
+			</section>
+		</iron-pages>
+	</template>
+
+	<script>
+		// INIT FIREBASE
+		var config = {
+			apiKey: "AIzaSyDqe1asD7rU0FQhMYDhjw_8KWAWwf6rtEs",
+			authDomain: "sign-up-page-plus.firebaseapp.com",
+			databaseURL: "https://sign-up-page-plus.firebaseio.com",
+			storageBucket: "sign-up-page-plus.appspot.com",
+			messagingSenderId: "700472867575"
+		};
+		firebase.initializeApp(config);
+	</script>
+
+	<script>
+		Polymer({
+			is: 'sign-up-page-plus-app',
+			// BUTTON FUNCTIONS
+			_signUpButton:function(){
+				this.$.sign_up_pages.select('sign_up');
+			},
+
+			_loginButton:function(){
+				this.$.sign_up_pages.select('login');
+			},
+
+			_submitButton: function () {
+				var subscribable =  this._userFlag &&
+						!(this._getBooleanErrorMailFlag(this._mailFlag)) &&
+						this._passwordFlag &&
+						this._allFieldsInserted();
+				if (subscribable) {
+					this._writeUser(this.user);
+					this.$.sign_up_pages.selectNext();
+				}
+			},
+
+			ready: function () {
+				this.user.level = this.$.level.itemSelected;
+				this.user.quota = this.$.quota.itemSelected;
+				this._readUsers();
+			},
+
+			// (FOR EVERY FLAG) FLAG TRUE => OK, FLAG FALSE => ERROR!
+			_controlUser: function (e){
+				try {
+					this._userFlag = (this.$.username.value == '' ||
+					this._users.indexOf(this.$.username.value) == -1);
+				}catch(Exception){
+					this._userFlag=true;
+				}
+				this._returnUser(e);
+			},
+
+			_controlPassword: function () {
+				this._passwordFlag = (this.$.password.value == this.$.repeat_password.value);
+			},
+
+			_controlMail: function (e) {
+				var control = /@/g;
+				// MAIL FLAG 0 => OK
+				this._mailFlag = 0;
+				if (!control.test(this.$.mail.value) && !(this.$.mail.value == '')) {
+					this._mailFlag = 1;
+				}
+				if (this._mails.indexOf(this.$.mail.value) != -1) {
+					this._mailFlag = 2;
+				}
+				this._returnUser(e);
+			},
+
+			_getBooleanErrorMailFlag :function(mailFlag){
+				return mailFlag == 0 ? false : true;
+			},
+
+			_getMailMessage:function(mailFlag){// mailFlag false => mail not subscribable
+				switch (mailFlag) {
+					case 0: return null;
+					case 1: return "The mail must have a @";
+					case 2: return "E-mail already used";
+				}
+			},
+
+			_returnUser: function (e) {
+				if (e.type == "keyup") {
+					this.set('user.' + e.target.id, e.target.value);
+				}
+				else if (e.type == "press") {
+					this.set('user.' + e.target.id, e.detail[e.target.indexSelected].label);
+				}
+			},
+
+			_allFieldsInserted:function() {
+				var properties=Object.keys(this.user);
+				return properties.every(function(proprerty){
+					return (this.user[proprerty]!=null &&
+					this.user[proprerty]!=undefined &&
+					this.user[proprerty] !="")
+				}.bind(this));
+			},
+
+			_readUsers:function(){
+				var ObjUsers
+				firebase.database().ref('users').on("value", function (snapshot) {
+					ObjUsers = (snapshot.val());
+					try{
+						this._users = Object.getOwnPropertyNames(ObjUsers);
+						this._mails = this._users.map(function(username){
+							return ObjUsers[username].mail;
+						}.bind(this))
+					}catch(Exception){}
+				}.bind(this));
+			},
+
+			_writeUser:function (user) {
+				firebase.database().ref('users/' + user['username']).set(user);
+			},
+
+			properties: {
+				_users:{
+					type:Array,
+					value:null
+				},
+				_mails:{
+					type:Array,
+					value:null
+				},
+				user:{
+					type:Object,
+					value:{
+						username:null,
+						password:null,
+						mail:null,
+						level:null,
+						quota:null,
+						fullname:null,
+						test:true
+					}
+				},
+				_userFlag: {
+					type: Boolean,
+					value: true
+				},
+				_passwordFlag:{
+					type:Boolean,
+					value:true
+				},
+				_mailFlag: {
+					type: Number,
+					value: 0
+				},
+				levels:{
+					type:Array,
+					value:[
+						{label:"0",selected:true},
+						{label:"1",selected:false},
+						{label:"2",selected:false}
+					]
+				},
+				quota:{
+					type:Array,
+					value:[
+						{label:"1",selected:true},
+						{label:"100",selected:false}
+					]
+				},
+				rules:{
+					type:Array,
+					value:[]
+				}
+			}
+		});
+	</script>
+</dom-module>
